@@ -14,21 +14,23 @@ import Harry_analysis as HCA
 import regex as re
 from scipy.fft import fft, fftfreq
 
-A_Param = [0.4,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+A_Param = [0.4,0.6,0.8,1,2,3,4,5,6]
 csv_sep = ';'
 sfreq = 800
+
+freq = 38 # Frequency of interest
 
 looper_A = range(len(A_Param))
 
 #Resonance Data
 fig1 = plt.figure('fig1')
 
-Folderpath_m = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230201_111602_09/mag_8Hz_res_000/'
+Folderpath_m = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230206_102048_00/mag_{}Hz_res_000/'.format(freq)
 res_m, res_legends_m = HCA.Res_read(Folderpath_m, csv_sep)
 
 resonance_m = HCA.Resonance(res_m, res_legends_m, sfreq)
 
-Folderpath_g = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230201_111602_09/grad_8Hz_res_000/'
+Folderpath_g = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230206_102048_00/grad_{}Hz_res_000/'.format(freq)
 res_g, res_legends_g = HCA.Res_read(Folderpath_g, csv_sep)
 
 resonance_g = HCA.Resonance(res_g, res_legends_g, sfreq)
@@ -41,17 +43,15 @@ resonance_g = HCA.Resonance(res_g, res_legends_g, sfreq)
 # spectrum_g = list([])
 
 
-daq_m = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230201_111602_09/mag_8Hz_noise_000/'
-daq_g = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230201_111602_09/grad_8Hz_noise_000/'
+daq_m = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230206_102048_00/mag_{}Hz_noise_000/'.format(freq)
+daq_g = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230206_102048_00/grad_{}Hz_noise_000/'.format(freq)
 
-trace_m, trace_legends_m = HCA.DAQ_read_shift(daq_m,csv_sep)
-trace_g, trace_legends_g = HCA.DAQ_read_shift(daq_g,csv_sep)
+trace_m, trace_legends_m = HCA.DAQ_read_freqs(daq_m,csv_sep)
+trace_g, trace_legends_g = HCA.DAQ_read_freqs(daq_g,csv_sep)
 
 traces_m = HCA.DAQ_Tracking_PURE(trace_m,trace_legends_m)
 traces_g = HCA.DAQ_Tracking_PURE(trace_g,trace_legends_g)
     
-
-
 
 #sample points
 N_m = traces_m.chunked_time.shape[1]
@@ -61,8 +61,6 @@ N_g = traces_g.chunked_time.shape[1]
 
 T_m = traces_m.chunked_time[0,1]-traces_m.chunked_time[0,0]
 T_g = traces_g.chunked_time[0,1]-traces_g.chunked_time[0,0]
-        
-
 
 xf_m = fftfreq(N_m, T_m)[:N_m//2]
 xf_g = fftfreq(N_g, T_g)[:N_g//2]
@@ -72,27 +70,26 @@ yf_corr_g= np.zeros((len(A_Param),len(xf_g)))
 
 for a in looper_A:
     
-    yf_m = fft(traces_m.chunked_data[a,:]*0.07488e-9)
-    yf_g = fft(traces_g.chunked_data[a,:]*0.07488e-9)
+    yf_m = fft(traces_m.chunked_data[a,:]*0.071488e-9)
+    yf_g = fft(traces_g.chunked_data[a,:]*0.071488e-9)
     
-    # yf_corr_m[a,:] = 20*np.log10(np.abs(yf_m[0:N_m//2])) #dB!
-    # yf_corr_g[a,:] = 20*np.log10(np.abs(yf_g[0:N_g//2]))
+    yf_corr_m[a,:] = 20*np.log10(2/N_m*np.abs(yf_m[0:N_m//2])) #dB ref! #Think about 2/N
+    yf_corr_g[a,:] = 20*np.log10(2/N_m*np.abs(yf_g[0:N_g//2]))
 
-    yf_corr_m[a,:] = np.abs(yf_m[0:N_m//2]) #Amp spectrum
-    yf_corr_g[a,:] = np.abs(yf_g[0:N_g//2])
+    # yf_corr_m[a,:] = 2/N_m *np.abs(yf_m[0:N_m//2]) #Amp spectrum
+    # yf_corr_g[a,:] = 2/N_m *np.abs(yf_g[0:N_g//2])
     
     plt.figure()
-    plt.semilogy(xf_m, 2/N_m * yf_corr_m[a,:],label = 'magnetometer')
-    plt.semilogy(xf_g, 2/N_g * yf_corr_g[a,:],label = 'gradiometer')
+    plt.semilogy(xf_m,  yf_corr_m[a,:],label = 'magnetometer') # Do we need 2/N when doing it in dB???
+    plt.semilogy(xf_g, yf_corr_g[a,:],label = 'gradiometer')
     plt.title('Amplitude: {}nT'.format(A_Param[a]))
     plt.xlim(-10,150)
-    plt.axvline(x=8,ls = '--',c='k',lw = '0.2')
+    # plt.ylim(-200,10)
+    plt.axvline(x=freq,ls = '--',c='k',lw = '0.2',label = '{}Hz reference'.format(freq))
     plt.grid()
     plt.legend()
 
-
-freq = 8
-#Attenuation
+#Attenuation figures
 
 def freq_peaks(freq,frq_domain,spectrum,param,looper):
     
@@ -110,16 +107,18 @@ def freq_peaks(freq,frq_domain,spectrum,param,looper):
     return maxval
 
 peaks_m = freq_peaks(freq,xf_m,yf_corr_m,A_Param,looper_A)
-peaks_g = freq_peaks(freq,xf_m,yf_corr_g,A_Param,looper_A)
+peaks_g = freq_peaks(freq,xf_g,yf_corr_g,A_Param,looper_A)
 
 atten = peaks_m-peaks_g
 
 plt.figure()
-plt.plot(A_Param,atten,'b.')
+plt.plot(A_Param,atten,'b*')
 plt.xlabel('Noise Amplitude (nT)')
 plt.ylabel('Attenuation (dB)')
-
+plt.title('Grad vs Mag attenuation @ {}Hz'.format(freq))
 plt.grid(color='k', linestyle='-', linewidth=0.3)
+plt.xlim(0,6.5)
+plt.ylim(-10,35)
 
 
 

@@ -10,7 +10,7 @@ import Harry_analysis as HCA
 
 
 B = np.array([0,1,5,10,20,50]) #nT
-B_corr = B
+B_corr = B*2
 central_f = np.array([1.6983, 1.726610311719,1.839929086124,1.982317711476,
                           2.266919623597,3.117296156455])*1e3
 

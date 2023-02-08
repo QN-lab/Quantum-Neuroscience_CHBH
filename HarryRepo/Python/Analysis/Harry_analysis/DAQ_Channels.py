@@ -23,13 +23,14 @@ def clean_from_trigger(dirty_chunked_data, trigger_chunked_data, patch):
 class DAQ_Trigger:
     def __init__(self,sig,header):
         
-        self.sig=sig 
+        self.sig=sig.drop_duplicates(keep='last')
         self.header=header
         
         #Pull from headers
         self.ChunkSize = self.header['chunk_size'].tolist() #Size of each chunk
         self.patch = self.header['chunk_number'].tolist() # Prints a list of the number of runs
         self.run_names = self.header['history_name'].tolist()
+        # self.filter_BW = self.header['history_name'].tolist()
         
         #Pull from Signals
         self.Chunk = self.sig['chunk'].tolist()
@@ -45,21 +46,20 @@ class DAQ_Trigger:
         for i in range(len(self.patch)):
             self.chunked_time[i,:] = (chunked_timestamps[i,:] - chunked_timestamps[i,0])/60e6
 
-#CHILD 1: SAME AS ABOVE BUT READS IN TRIGGER TO CLEAN ITSELF
+class DAQ_Tracking_PURE(DAQ_Trigger):
+        def __init__(self,sig,header):
+            DAQ_Trigger.__init__(self, sig, header) #Share init conditions from Parent Class (DAQ_Trigger)
+            self.chunked_field = self.chunked_data*0.071488e-9
+
+#CHILD 1:
 class DAQ_Tracking(DAQ_Trigger):
         def __init__(self,sig,header,trigger_object):
             DAQ_Trigger.__init__(self, sig, header) #Share init conditions from Parent Class (DAQ_Trigger)
             
             self.cleaned_chunked = clean_from_trigger(self.chunked_data,trigger_object.chunked_data, trigger_object.patch) #Use cleaner function to remove spoiled data
             
-            self.cleaned_chunked_field = self.cleaned_chunked/14.28
-            self.cleaned_continuous_field = (self.cleaned_chunked.reshape(-1,1))/14.28 # 14.28 Hz/nT mod freq to field (2x larmor gyromagnetic ratio)
-            
-class DAQ_Tracking_PURE(DAQ_Trigger):
-        def __init__(self,sig,header):
-            DAQ_Trigger.__init__(self, sig, header) #Share init conditions from Parent Class (DAQ_Trigger)
-            
-            
+            self.cleaned_chunked_field = self.cleaned_chunked*0.07488e-9
+            self.cleaned_continuous_field = (self.cleaned_chunked.reshape(-1,1))*0.071488e-9 # 14.28 Hz/nT mod freq to field (2x larmor gyromagnetic ratio)
 
 #CHILD 2: SAME AS CHILD 1 BUT ADDS SOME FREQUENCY STUFF.
 class DAQ_Spectrum(DAQ_Tracking):
@@ -105,6 +105,5 @@ class DAQ_Spectrum(DAQ_Tracking):
         
         self.avg_max_spect_val = max(self.avg_spect)
         self.avg_SNr = self.avg_max_spect_val/self.avg_floor
-        
         
         

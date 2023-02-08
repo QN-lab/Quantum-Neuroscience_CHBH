@@ -7,6 +7,8 @@ def ReadData(folder_path,filename,headername,csv_sep):
     out_headers = pd.read_csv(folder_path+headername,sep=csv_sep)
     return out_sig, out_headers
 
+
+
 def Res_read(folder_path,csv_sep):
     filename = 'dev3994_demods_0_sample_00000.csv'
     headername = 'dev3994_demods_0_sample_header_00000.csv'
@@ -47,14 +49,35 @@ def DAQ_trigger_read(folder_path,csv_sep):
     
     return out_sig, out_headers
 
-def DAQ_read_shift(folder_path,csv_sep):
+def DAQ_read_auxin0(folder_path,csv_sep):
 
-    filename = 'dev3994_demods_0_sample_frequency_avg_00000.csv'
-    headername = 'dev3994_demods_0_sample_frequency_avg_header_00000.csv'
+    filename = 'dev3994_auxins_0_sample_auxin0_avg_00000.csv'
+    headername = 'dev3994_auxins_0_sample_auxin0_avg_header_00000.csv'
     
     out_sig, out_headers = ReadData(folder_path, filename, headername, csv_sep)
     
     return out_sig, out_headers
+
+
+def DAQ_read_shift(folder_path,csv_sep):
+    
+    filename = 'dev3994_pids_0_stream_shift_avg_00000.csv'
+    headername = 'dev3994_pids_0_stream_shift_avg_header_00000.csv'
+
+    out_sig, out_headers = ReadData(folder_path, filename, headername, csv_sep)
+
+    return out_sig, out_headers
+
+def DAQ_read_freqs(folder_path,csv_sep):
+    
+    filename = 'dev3994_demods_0_sample_frequency_avg_00000.csv'
+    headername = 'dev3994_demods_0_sample_frequency_avg_header_00000.csv'
+
+    out_sig, out_headers = ReadData(folder_path, filename, headername, csv_sep)
+
+    return out_sig, out_headers
+
+
 #Functions that create x or y limits based on if you want to include errorbars
     #in the calculation of the limits.
     #fraction is the extent at which you want to extend the limits from the maximu
@@ -70,4 +93,6 @@ def limitise_werr(data,error,fraction):
     top = max(data)+abs(max(error))+fraction*abs(max(data))
     lims = (bottom,top)
     return lims
+
+
     

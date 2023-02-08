@@ -37,7 +37,7 @@ resonance = list([])
 #Resonance Data
 for i in looper_T:
     
-    Folderpath_r = 'Z:/jenseno-opm/Data/2023_01_20/{}_res_000/'.format(Temp_Param[i]) #Resonance Data
+    Folderpath_r = 'Z:/Data/2023_01_20/{}_res_000/'.format(Temp_Param[i]) #Resonance Data
     res, res_legends = HCA.Res_read(Folderpath_r, csv_sep)
     
     resonance.append(HCA.Resonance(res, res_legends, sfreq))
@@ -54,7 +54,7 @@ spectrum_temp = list([])
 #Create lists of objects, each corresponding to every DAQ run
 for i in looper_T:
     for j in looper_P:
-        daq = 'Z:/jenseno-opm/Data/2023_01_20/{}_{}_daq_000/'.format(Temp_Param[i],Power_Param[j])
+        daq = 'Z:/Data/2023_01_20/{}_{}_daq_000/'.format(Temp_Param[i],Power_Param[j])
         
         trig, trig_legends = HCA.DAQ_trigger_read(daq,csv_sep)
         track, track_legends = HCA.DAQ_tracking_read(daq,csv_sep)
