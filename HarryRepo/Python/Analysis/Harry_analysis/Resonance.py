@@ -90,7 +90,7 @@ class Resonance:
               plt.plot(self.data[i,:,0],Lorentzian(self.data[i,:,0], *self.fit_params[i,:]),label=str(self.run_names[i]))
               plt.xlabel("frequency, Hz")
               plt.grid(color='k', linestyle='-', linewidth=0.5)
-              plt.legend()
+              plt.legend(loc='upper left')
               
     def plot_no_fit(self):
         for i in self.patch:
@@ -98,7 +98,7 @@ class Resonance:
             plt.plot(self.data[i,:,0], self.data[i,:,1]*1000,label=str(self.run_names[i]))
             plt.ylabel("quadrature, mV")
             plt.grid(color='k', linestyle='-', linewidth=0.5)
-            plt.legend()
+            plt.legend(loc='upper left')
                 
             
             
