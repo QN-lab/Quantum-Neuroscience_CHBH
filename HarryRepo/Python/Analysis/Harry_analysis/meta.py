@@ -68,6 +68,14 @@ def DAQ_read_shift(folder_path,csv_sep):
 
     return out_sig, out_headers
 
+def DAQ_read_xiy(folder_path,csv_sep):
+    
+    filename = 'dev3994_demods_0_sample_xiy_fft_abs_avg_00000.csv'
+    headername = 'dev3994_demods_0_sample_xiy_fft_abs_avg_header_00000.csv'
+
+    out_sig, out_headers = ReadData(folder_path, filename, headername, csv_sep)
+
+    return out_sig, out_headers
 
 #Functions that create x or y limits based on if you want to include errorbars
     #in the calculation of the limits.

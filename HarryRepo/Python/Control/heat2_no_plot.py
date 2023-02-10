@@ -36,7 +36,7 @@ try:
     Amp1 = Amp2 = np.array([Amp_i])
     ###########################################################################
 #%% Prep PID
-    T_targ= [36.5,41.4]             #Set PID temperature target
+    T_targ= [36.2,40.3]             #Set PID temperature target
     prop = [0.2, 0.2]            #P
     integ = [0.00022, 0.00022]   #I
     deriv = [0.00025, 0.00025]   #D

@@ -17,7 +17,7 @@ import math
 import Harry_analysis as HCA
 
 #%%
-Param = [0,1,2,5,10,15,20] # Bz DC offset in nT
+Param = [0,1,5,10,30,60] # Bz DC offset in nT
 ref_grad = [0,0.5,1,1.5,2,5,10,20] #pT/cm
 csv_sep = ';'
 
@@ -26,7 +26,7 @@ looper = range(len(Param))
 track = list([])
 
 for i in looper:
-    daq = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230207_234352_06/{}nT_DC_000/'.format(Param[i])
+    daq = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230208_233828_07/{}_DC_000/'.format(Param[i])
     
     track_i, track_legends = HCA.DAQ_read_shift(daq, csv_sep)
     
@@ -82,7 +82,6 @@ for i in looper:
     for j in range(len(ref_grad)):
         mean_vals[i,j] = np.mean(track[i].chunked_data[2,int(sind[j]):int(find[j])])
         
-        
 plt.figure()
 for i in looper:
     plt.plot(ref_grad,mean_vals[i,:],'-o',label = str(Param[i]))
@@ -93,6 +92,36 @@ plt.legend(title='DC Mag Field (nT)',fontsize=10)
 plt.title('Gradiometer DC test, Run No. 3')
 plt.grid()
 
+#Average over trials
+
+mean_vals_mat = np.zeros((5,len(Param),len(ref_grad)))
+for h in range(5):
+    for i in looper:
+        for j in range(len(ref_grad)):
+            mean_vals_mat[h,i,j] = np.mean(track[i].chunked_data[h,int(sind[j]):int(find[j])])
+
+mean_vals_tot = np.mean(mean_vals_mat,axis=0)
+
+coefs = np.zeros((2,len(looper)))
+
+plt.figure()
+for i in looper:
+    
+    coefs[:,i] = np.polyfit(ref_grad, mean_vals_tot[i,:], 1)
+    poly1d_fn = np.poly1d(coefs[:,i]) 
+    plt.plot(ref_grad,mean_vals_tot[i,:],'ko')
+    plt.plot(ref_grad,poly1d_fn(ref_grad),'--', label = str(Param[i]))
+    
+    
+plt.xlabel('Applied Gradient(pT/cm)')
+plt.ylabel('Measured gradient in Modulation freq shift (Hz)')
+plt.ticklabel_format(useOffset=False)
+plt.legend(title='DC Mag Field (nT)',fontsize=10)
+plt.title('Gradiometer DC test, All runs, averaged')
+plt.grid()
+
+avg_slope = np.mean(coefs[0,:])
+
 #%%Resonances
 
 sfreq = 800 # Frequency of interest
@@ -100,27 +129,19 @@ sfreq = 800 # Frequency of interest
 #Resonance Data
 fig1 = plt.figure('fig1')
 
-Folderpath_m = daq = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230207_234352_06/grad_res_000/'
+Folderpath_m = daq = 'C:/Users/vpixx/Documents/Zurich Instruments/LabOne/WebServer/session_20230208_233828_07/grad_res_000/'
 res_m, res_legends_m = HCA.Res_read(Folderpath_m, csv_sep)
 
 resonance_m = HCA.Resonance(res_m, res_legends_m, sfreq)
 
 resonance_m.plot_with_fit()
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
     

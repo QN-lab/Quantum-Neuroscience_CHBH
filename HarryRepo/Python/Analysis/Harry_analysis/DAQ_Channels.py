@@ -54,12 +54,14 @@ class DAQ_Tracking_PURE(DAQ_Trigger):
 #CHILD 1:
 class DAQ_Tracking(DAQ_Trigger):
         def __init__(self,sig,header,trigger_object):
-            DAQ_Trigger.__init__(self, sig, header) #Share init conditions from Parent Class (DAQ_Trigger)
+            if trigger_object == 0:
+                DAQ_Trigger.__init__(self, sig, header) #Share init conditions from Parent Class (DAQ_Trigger)
+            else:
+                DAQ_Trigger.__init__(self, sig, header)
+                self.cleaned_chunked = clean_from_trigger(self.chunked_data,trigger_object.chunked_data, trigger_object.patch) #Use cleaner function to remove spoiled data
             
-            self.cleaned_chunked = clean_from_trigger(self.chunked_data,trigger_object.chunked_data, trigger_object.patch) #Use cleaner function to remove spoiled data
-            
-            self.cleaned_chunked_field = self.cleaned_chunked*0.07488e-9
-            self.cleaned_continuous_field = (self.cleaned_chunked.reshape(-1,1))*0.071488e-9 # 14.28 Hz/nT mod freq to field (2x larmor gyromagnetic ratio)
+                self.cleaned_chunked_field = self.cleaned_chunked*0.071488e-9
+                self.cleaned_continuous_field = (self.cleaned_chunked.reshape(-1,1))*0.071488e-9 # 14.28 Hz/nT mod freq to field (2x larmor gyromagnetic ratio)
 
 #CHILD 2: SAME AS CHILD 1 BUT ADDS SOME FREQUENCY STUFF.
 class DAQ_Spectrum(DAQ_Tracking):
@@ -105,5 +107,31 @@ class DAQ_Spectrum(DAQ_Tracking):
         
         self.avg_max_spect_val = max(self.avg_spect)
         self.avg_SNr = self.avg_max_spect_val/self.avg_floor
+        
+        
+        
+class DAQ_Spectrum_none(DAQ_Trigger): #No temp trigger rejection
+    def __init__(self,sig,header):
+        
+        DAQ_Trigger.__init__(self,sig,header) #Share init conditions from the other child class
+ 
+        pull_rel_off = self.header['grid_col_offset'].tolist()
+        self.frq_domain = np.linspace(pull_rel_off[0],-pull_rel_off[0],self.ChunkSize[0])
+        
+        sind1 = 0     #-420
+        find1 = 25    #-400
+        
+        self.floor = np.zeros(len(self.patch))
+        self.floor_repd = np.zeros((len(self.patch),self.chunked_data.shape[1]))
+        self.max_spect_val = np.zeros(len(self.patch))
+        self.SNr = np.zeros(len(self.patch))
+        
+        for i in self.patch:
+            self.floor[i] = stats.median(self.chunked_data[i,sind1:find1])
+            self.floor_repd[i,:] = self.floor[i]*np.ones(8191)
+            self.max_spect_val[i] = max(self.chunked_data[i,:])
+            self.SNr[i] = self.max_spect_val[i]/self.floor[i]
+        
+       
         
         
