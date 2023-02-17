@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Feb  8 14:43:38 2023
+Created on Thu Feb  9 14:39:45 2023
 
 @author: vpixx
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 length = np.ones(10000)
 
-A = [0, 0.5, 1, 1.5, 2, 5, 10, 20]
+A = [0,0.5,1,2,3,5,7.5,10]
 
-pp_conv = 3.073e-3 # V(amp)/pTcm
+pp_conv = 3.23e-3 # V(amp)/nT
 
 sig = np.zeros((len(A),len(length)))
 
@@ -23,5 +24,4 @@ output = sig.flatten()
 plt.figure()
 plt.plot(output)
 
-
-np.savetxt("0_20pT_steps.csv", output, delimiter=",")
+# np.savetxt("DC_HG_Steps_0-10nT.csv", output, delimiter=",")

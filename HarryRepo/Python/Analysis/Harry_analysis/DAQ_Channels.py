@@ -46,6 +46,29 @@ class DAQ_Trigger:
         for i in range(len(self.patch)):
             self.chunked_time[i,:] = (chunked_timestamps[i,:] - chunked_timestamps[i,0])/60e6
 
+class DAQ_Spectrum_PURE(DAQ_Trigger):
+    def __init__(self,sig,header):
+
+        DAQ_Trigger.__init__(self,sig,header) #Share init conditions from the other child class
+ 
+        pull_rel_off = self.header['grid_col_offset'].tolist()
+        self.frq_domain = np.linspace(pull_rel_off[0],-pull_rel_off[0],self.ChunkSize[0])
+
+        sind1 = 0     #-420
+        find1 = 25    #-400
+
+        self.floor = np.zeros(len(self.patch))
+        self.floor_repd = np.zeros((len(self.patch),self.chunked_data.shape[1]))
+        self.max_spect_val = np.zeros(len(self.patch))
+        self.SNr = np.zeros(len(self.patch))
+
+        for i in self.patch:
+            self.floor[i] = stats.median(self.chunked_data[i,sind1:find1])
+            self.floor_repd[i,:] = self.floor[i]*np.ones(8191)
+            self.max_spect_val[i] = max(self.chunked_data[i,:])
+            self.SNr[i] = self.max_spect_val[i]/self.floor[i]
+
+
 class DAQ_Tracking_PURE(DAQ_Trigger):
         def __init__(self,sig,header):
             DAQ_Trigger.__init__(self, sig, header) #Share init conditions from Parent Class (DAQ_Trigger)
@@ -108,29 +131,8 @@ class DAQ_Spectrum(DAQ_Tracking):
         self.avg_max_spect_val = max(self.avg_spect)
         self.avg_SNr = self.avg_max_spect_val/self.avg_floor
         
-        
-        
-class DAQ_Spectrum_none(DAQ_Trigger): #No temp trigger rejection
-    def __init__(self,sig,header):
-        
-        DAQ_Trigger.__init__(self,sig,header) #Share init conditions from the other child class
- 
-        pull_rel_off = self.header['grid_col_offset'].tolist()
-        self.frq_domain = np.linspace(pull_rel_off[0],-pull_rel_off[0],self.ChunkSize[0])
-        
-        sind1 = 0     #-420
-        find1 = 25    #-400
-        
-        self.floor = np.zeros(len(self.patch))
-        self.floor_repd = np.zeros((len(self.patch),self.chunked_data.shape[1]))
-        self.max_spect_val = np.zeros(len(self.patch))
-        self.SNr = np.zeros(len(self.patch))
-        
-        for i in self.patch:
-            self.floor[i] = stats.median(self.chunked_data[i,sind1:find1])
-            self.floor_repd[i,:] = self.floor[i]*np.ones(8191)
-            self.max_spect_val[i] = max(self.chunked_data[i,:])
-            self.SNr[i] = self.max_spect_val[i]/self.floor[i]
+
+
         
        
         
