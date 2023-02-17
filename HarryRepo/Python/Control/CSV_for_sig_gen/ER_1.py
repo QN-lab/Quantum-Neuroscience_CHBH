@@ -1,27 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Feb  8 14:43:38 2023
+Created on Thu Feb  9 14:39:45 2023
 
 @author: vpixx
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
 
-length = np.ones(10000)
+length = np.linspace(0, 1,num=10000)
 
-A = [0, 0.5, 1, 1.5, 2, 5, 10, 20]
+f = 1
 
-pp_conv = 3.073e-3 # V(amp)/pTcm
+A = np.array([0,750,0,150,0,30,0,300,0])*1e-3
 
 sig = np.zeros((len(A),len(length)))
 
 for i in range(len(A)):
-    sig[i,:] = A[i]*pp_conv*length
+    sig[i,:] = A[i]*np.sin(2*np.pi*f*length)
     
 output = sig.flatten()
 
 plt.figure()
 plt.plot(output)
 
-
-np.savetxt("0_20pT_steps.csv", output, delimiter=",")
+np.savetxt("Brain_Sim2.csv", output, delimiter=",")
