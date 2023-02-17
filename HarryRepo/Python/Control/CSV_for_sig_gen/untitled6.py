@@ -5,23 +5,32 @@ Created on Wed Feb  8 14:43:38 2023
 @author: vpixx
 """
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt#
 
-length = np.ones(10000)
+length = np.ones(5000)
 
-A = [0, 0.5, 1, 1.5, 2, 5, 10, 20]
+pt_0 = 0*length
 
-pp_conv = 3.073e-3 # V(amp)/pTcm
+pt_05 = 1.54e-3*length
 
-sig = np.zeros((len(A),len(length)))
+pt_1 = 3.07e-3*length
 
-for i in range(len(A)):
-    sig[i,:] = A[i]*pp_conv*length
-    
-output = sig.flatten()
+pt_15 = 4.61e-3*length
+
+pt_2 = 6.15e-3*length
+
+pt_5 = 1.54e-2*length
+
+pt_10 = 3.07e-2*length
+
+pt_20 = 6.15e-2*length
+
+go_back = np.linspace(pt_20[0],pt_0[0],num=5000)
+
+output = np.hstack([pt_0,pt_05,pt_1,pt_15,pt_2,pt_5,pt_10,pt_20,go_back])
 
 plt.figure()
 plt.plot(output)
 
 
-np.savetxt("0_20pT_steps.csv", output, delimiter=",")
+np.savetxt("0_20pT.csv", output, delimiter=",")
