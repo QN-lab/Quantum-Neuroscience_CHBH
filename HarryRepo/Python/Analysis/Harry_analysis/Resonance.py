@@ -5,6 +5,8 @@ import regex as re
 import math
 plt.style.use('classic')
 
+
+
 #Fitting function
 def Lorentzian(x, amp, cen, wid, slope, offset):
     return (amp*(wid)**2/((x-cen)**2+(wid)**2)) + slope*x + offset
@@ -90,7 +92,7 @@ class Resonance:
               plt.plot(self.data[i,:,0],Lorentzian(self.data[i,:,0], *self.fit_params[i,:]),label=str(self.run_names[i]))
               plt.xlabel("frequency, Hz")
               plt.grid(color='k', linestyle='-', linewidth=0.5)
-              plt.legend(loc='upper left')
+              plt.legend(loc='upper right')
               
     def plot_no_fit(self):
         for i in self.patch:
