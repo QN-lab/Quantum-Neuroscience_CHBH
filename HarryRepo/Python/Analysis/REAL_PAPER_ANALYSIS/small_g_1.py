@@ -4,8 +4,8 @@ Created on Wed Aug  2 17:42:06 2023
 
 @author: H
 """
-# from Proc import obs
-import obs
+from Proc import obs
+# import obs
 import matplotlib.pyplot as plt
 plt.style.use('classic')
 import numpy as np
@@ -23,7 +23,7 @@ Gain = 14.2
 T1=0
 T2=4
 
-base_directory_g = 'Z:\\jenseno-opm\\Data\\2023_08_11_bench\\low_g_grad\\'
+base_directory_g = 'Z:\\Data\\2023_08_11_bench\\low_g_grad\\'
 
 subfolder_list_g = os.listdir(base_directory_g)
 print('Loading.....')
@@ -52,7 +52,6 @@ run_std_up = np.std(up_dat,axis=1)
 run_av_down = np.mean(down_dat,axis=1)
 run_std_down = np.std(down_dat,axis=1)
 
-
 diffs = run_av_down-run_av_up
 
 av_change = np.mean(diffs)
@@ -64,5 +63,5 @@ for i in range(Data_list_g[1].PiD.Field.shape[0]):
     plt.figure()
     plt.plot(Data_list_g[0].PiD.chunked_time[0,:],Data_list_g[1].PiD.Field[i,:])
 
-# plt.figure()
-# plt.stackplot(range(up_dat.shape[1]),up_dat)
+plt.figure()
+plt.stackplot(range(up_dat.shape[1]),up_dat)

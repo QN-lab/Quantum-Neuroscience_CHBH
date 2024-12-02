@@ -16,7 +16,6 @@ def clean_from_trigger(dirty_chunked_data, trigger_chunked_data, patch):
     
     return cleaned_data
 
-
 ##CLASSES
 
 #PARENT CLASS, ONLY READS IN AND CHUNKS THE DATA

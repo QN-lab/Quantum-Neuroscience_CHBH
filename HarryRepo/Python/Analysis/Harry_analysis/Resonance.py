@@ -6,11 +6,9 @@ import math
 plt.style.use('classic')
 
 
-
 #Fitting function
 def Lorentzian(x, amp, cen, wid, slope, offset):
     return (amp*(wid)**2/((x-cen)**2+(wid)**2)) + slope*x + offset
-
 
 class Resonance:
     def __init__(self,sig,header,sfreq):
@@ -38,7 +36,7 @@ class Resonance:
           self.data[x,:,1]=np.array(x_data.iloc[x,:])
           self.data[x,:,2]=np.array(y_data.iloc[x,:])
 
-     #Automatically create central frequency guess after a certain frequency(ignore zero field)
+     #Automatically create central frequency guess after a certain frequency (ignores zero field resonance)
       start_indx = np.abs(self.data[0,:,0] - sfreq).argmin()
       self.peakindx = start_indx + self.data[:,start_indx:,1].argmax(axis=1) #index at which the lorentzian peak exists for each run
       

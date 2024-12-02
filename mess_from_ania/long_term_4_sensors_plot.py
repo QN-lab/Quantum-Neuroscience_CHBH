@@ -5,7 +5,6 @@ Created on Mon Jul 31 14:18:18 2023
 @author: kowalcau
 """
 
-
 data_flc=data_fl.copy()
 
 data_gc=data_g.copy()
@@ -13,7 +12,6 @@ data_gc=data_g.copy()
 
 x1=data_g['time']
 y0=data_g['B_T_cal']-data_g.iloc[0][5]
-
 
 #y1=data_g['value']
 x2=data_fl['time']-data_fl.iloc[0][0]
@@ -38,7 +36,6 @@ origin.columns=['time_grad', 'y_grad', 'time_ref', 'Z_ref', 'X_ref', 'Y_ref']
 print(origin)
 print(origin.shape)
 origin.to_csv('heart_grad'+str(dir_name)+'_'+'whole.csv', sep=',', index=False)
-
 
 #%%
 fig_comparison2, ax1 = plt.subplots()
@@ -76,7 +73,6 @@ fig_comparison2.tight_layout()  # otherwise the right y-label is slightly clippe
 fig_comparison2.savefig(str(dir_name) + '_long_run_comparison.png')
 #plt.legend()
 plt.show()
-
 
 #%%choppedterm 4 sensors 2 orthogonal
 tmin=98

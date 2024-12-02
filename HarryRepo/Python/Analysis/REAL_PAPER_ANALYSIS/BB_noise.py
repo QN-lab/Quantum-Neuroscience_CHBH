@@ -47,12 +47,12 @@ T1=0
 T2=3
 
 # base_directory_g = 'Z:\\Data\\2023_08_18_bench\\grad_noise_high\\'
-base_directory_g = 'Z:\\jenseno-opm\\Data\\2023_08_17_bench\\grad_noise\\'
+base_directory_g = 'Z:\\Data\\2023_08_17_bench\\grad_noise\\'
 # base_directory_g = 'Z:\\Data\\2023_08_25_bench\\grad_100nT_bb_noise\\'
 subfolder_list_g = os.listdir(base_directory_g)
 
 # base_directory_m = 'Z:\\Data\\2023_08_18_bench\\mag_noise_high\\'
-base_directory_m = 'Z:\\jenseno-opm\\Data\\2023_08_17_bench\\mag_noise\\'
+base_directory_m = 'Z:\\Data\\2023_08_17_bench\\mag_noise\\'
 # base_directory_m = 'Z:\\Data\\2023_08_25_bench\\mag_100nT_bb_noise\\'
 subfolder_list_m = os.listdir(base_directory_m)
  
