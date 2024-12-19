@@ -24,6 +24,8 @@ n_trials_per_block = 15  # Trials per block
 fixation_duration = 2  # Duration of fixation cross (in seconds)
 circle_duration = 1  # Duration of red circle (in seconds)
 
+print('Expected time:' + str(n_blocks*n_trials_per_block*(fixation_duration+circle_duration)/60) + 'minutes')
+
 # Create a window
 win = visual.Window(size=(800, 600), color=(0, 0, 0), units="pix")
 
@@ -91,7 +93,7 @@ def deliver_TTL2():
 show_text(win, continuous_task_text)  # Display continuous task instructions
 fixation.draw()  # Display fixation cross for 10 seconds
 win.flip()
-core.wait(1)
+core.wait(10)
 
 # Show introductory text (moved here)
 show_text(win, intro_text)
