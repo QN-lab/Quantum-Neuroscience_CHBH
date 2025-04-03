@@ -15,7 +15,7 @@ import serial
 
 plt.close('all')
 
-session = Session("localhost")
+session = Session("172.29.168.20")
 device = session.connect_device("DEV3994")
 
 OUT_CHANNEL = 0         #Output channel: Sig out 1
@@ -26,8 +26,8 @@ DEMOD_INDEX = 0         #Demodulator Index
 OSC_INDEX = 0           #Oscillator isndex (I think we only have 1 oscillator)
 
 #C1,C2 bias current in micro-Amps5
-b1_fix = 700
-b2_start = 650
+b1_fix = 300
+b2_start = 300
 
 #SET NODES
 with device.set_transaction():
@@ -36,7 +36,7 @@ with device.set_transaction():
     device.currins[CURR_INDEX].autorange()
     device.currins[CURR_INDEX].float(0)                           #Floating ground    OFF
     device.currins[CURR_INDEX].scaling(1)                         #Input scaling      1V/1V
-    device.currins[CURR_INDEX].range(0.000010)   
+    device.currins[CURR_INDEX].range(1e-6)   
     # device.currins[IN_CHANNEL].range(0.010)                     #Amplifier range    
 
     # assert device.sigins[IN_CHANNEL].range() <= 0.30000001192092896, (
@@ -316,7 +316,7 @@ for i, bias in enumerate(biases):
     
     setbias([b1_fix,bias])
     
-    data, sample_node = sweep_now(device,1.4e3,3.5e3,100,OSC_INDEX,DEMOD_INDEX,0,i+1)
+    data, sample_node = sweep_now(device,1.0e3,2.5e3,100,OSC_INDEX,DEMOD_INDEX,0,i+1)
 
     xData, yData, fittedParameters, fit_eval = read_and_fit(data,sample_node,2)
 
@@ -348,7 +348,7 @@ bias = biases[opt_inx]              #Re-adjust bias to this bias value
 
 setbias([b1_fix,bias])
 
-data, sample_node = sweep_now(device,1.6e3,3.2e3,150,OSC_INDEX,DEMOD_INDEX,0,1)
+data, sample_node = sweep_now(device,1.0e3,2.2e3,150,OSC_INDEX,DEMOD_INDEX,0,1)
 
 xData_l1, yData_l1, fittedParameters_l1, fit_eval_l1 = read_and_fit(data,sample_node,1)
 

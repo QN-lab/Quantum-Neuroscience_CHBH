@@ -16,11 +16,11 @@ import pandas as pd
 pd.get_option("display.max_columns",15)
 
 #Z:\Data\Processing_directory\Attenuation_gradiometer
-base_directory='Y:\\Ania\\2023_07_11_FL_AER'
+base_directory='Y:\\Ania\\sub-P450-fef'
 dir_name = os.path.basename(base_directory)
 os.chdir(base_directory)
 print(dir_name)
-file_name='20230711_161222_C4B4_birmingham_AER01_raw.fif'
+file_name='20250311_162425_sub-P450_file-FEF_raw.fif'
 raw=mne.io.read_raw_fif(file_name,preload=True)
 info = mne.io.read_info(file_name)
 print(info)

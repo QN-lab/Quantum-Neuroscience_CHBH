@@ -2,15 +2,17 @@
 # ###############################################################################
 # ###############################################################################
 
+from toptica.lasersdk.dlcpro.v3_2_0 import DLCpro,NetworkConnection
 from zhinst.toolkit import Session
 import logging
 import sys
 from scipy.optimize import curve_fit
-from scipy.optimize import differential_evolution
 import matplotlib.pyplot as plt
 import numpy as np
 import warnings
-
+from scipy.optimize import differential_evolution
+import serial
+import time
 
 session = Session("localhost")
 device = session.connect_device("DEV3994")
@@ -24,22 +26,15 @@ OSC_INDEX = 0           #Oscillator index (I think we only have 1 oscillator)
 
 #SET NODES
 with device.set_transaction():
-    
-    # device.sigins[IN_CHANNEL].float(0)                          #Floating ground    OFF
-    # device.sigins[IN_CHANNEL].diff(0)                           #Diff in            OFF
-    # device.sigins[IN_CHANNEL].imp50(0)                          #50Ohm Imp          OFF
-    # device.sigins[IN_CHANNEL].ac(0)                             #AC coupling        OFF
-    # device.sigins[IN_CHANNEL].scaling(1)                        #Input scaling      1V/1V
-    # device.sigins[IN_CHANNEL].range(0.010)                     #Amplifier range    
-    # device.sigins[IN_CHANNEL].autorange()
-    
+  
     device.currins[CURR_INDEX].on(True)
     device.currins[CURR_INDEX].autorange()
-    device.currins[CURR_INDEX].float(0)                          #Floating ground    OFF
-    device.currins[CURR_INDEX].scaling(1)                       #Input scaling      1V/1V
-    # device.currins[IN_CHANNEL].range(0.010)                     #Amplifier range    
+    device.currins[CURR_INDEX].float(0)                           #Floating ground    OFF
+    device.currins[CURR_INDEX].scaling(1)                         #Input scaling      1V/1V
+    device.currins[CURR_INDEX].range(0.000100)   
+    device.currins[CURR_INDEX].autorange(1)                       #Amplifier range    
 
-    # assert device.sigins[IN_CHANNEL].range() <= 0.30000001192092896, (
+    # assert device.sigins[CURR_INDEX].range() < 10e-06, (
     #     'Autorange has not settled to the minimum value: check sensor and DC offsets'
     #     )
         
@@ -48,7 +43,7 @@ with device.set_transaction():
     device.demods[DEMOD_INDEX].rate(13.39e3)                    #PC sampling rate for data collection
     device.demods[DEMOD_INDEX].oscselect(OSC_INDEX)             #select internal oscillator (only one for us?)
     device.demods[DEMOD_INDEX].harmonic(1)                      #Multiplies ref osc freq by this integer factor (INVESTIGATE NOTE IN THIS ABOUT PLL LOCKING)
-    device.demods[DEMOD_INDEX].phaseshift(-108)                 #Applied phase shift (deg) to internal ref
+    device.demods[DEMOD_INDEX].phaseshift(72)                   #Applied phase shift (deg) to internal ref
     device.demods[DEMOD_INDEX].sinc(0)                          #Sinc filter OFF
     device.demods[DEMOD_INDEX].timeconstant(0.0007)             #Filter time constant
     device.demods[DEMOD_INDEX].enable(True)                     #Enables Data collection for this demodulator, increases load on PC port
@@ -60,7 +55,7 @@ with device.set_transaction():
     device.sigouts[OUT_CHANNEL].offset(0)                       #DC offset 0V
     device.sigouts[OUT_CHANNEL].enables[OUT_MIXER_CHANNEL](1)   #Enable output amplitudes to drive to sig out 1 (switch 'En' on Block Diagram)
     device.sigouts[OUT_CHANNEL].amplitudes(3)                   #Output amplitude max Vpk
-
+    
 ###############################################################################
 
 #Sweeper function

@@ -1,5 +1,6 @@
 import serial
 
+###############################################################################
 #Write current values to the Pustelny Power Supply (PCS)
 
 def setbias(vals):
@@ -31,8 +32,10 @@ def setbias(vals):
     return
 
 ###############################################################################
+#Execute
 
-
-vals = [400,447.5] #C1,C2 bias current in micro-Amps5
+vals = [314,-300] #C1,C2 bias current in micro-Amps5
 
 setbias(vals)
+
+#Roughly 103 per 500Hz
